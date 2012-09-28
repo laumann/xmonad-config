@@ -67,4 +67,5 @@ defaultXMobarRC = Config $
 printConfig conf = putStr $ show conf
 
 getXMobarRC :: IO FilePath
-getXMobarRC = getHomeDirectory >>= (\h -> return $ h </> xmobarrc)
+getXMobarRC = do h <- getHomeDirectory
+                 return $ h </> xmobarrc

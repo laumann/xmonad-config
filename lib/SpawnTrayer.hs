@@ -6,7 +6,7 @@ module SpawnTrayer
 import XMonad
 import XMonad.Util.Run (spawnPipe, safeSpawn)
 
-trayer = "trayer"               :: FilePath
+trayer   = "trayer"             :: FilePath
 soundApp = "gnome-sound-applet" :: FilePath
 
 spawnSoundApp :: MonadIO m => m ()
@@ -19,11 +19,10 @@ spawnTrayer = safeSpawn trayer args
                , "--widthtype", "pixel"
                , "--width", "150"
                , "--heighttype", "pixel"
-               , "--height", "15"
+               , "--height", "14"
                , "--alpha", "150"
                , "--transparent", "true"
-               , "--tint", "0xffffff"
+               , "--tint", "0x000000"
                , "--SetDockType", "true"
                , "--expand", "true"
-             --, "--SetPartialStrut", "true"                                   
                ]
