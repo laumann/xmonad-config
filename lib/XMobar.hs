@@ -11,6 +11,8 @@ module XMobar
 import System.Directory --(getHomeDirectory)
 import System.FilePath.Posix
 
+import Text.PrettyPrint
+
 newtype Config = Config { options :: [Option] } --deriving (Show)
 data    Option = Opt String String
                | OptList String [String]

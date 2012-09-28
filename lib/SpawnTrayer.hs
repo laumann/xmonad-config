@@ -15,7 +15,7 @@ spawnTrayer = safeSpawn trayer args
                , "--height", "15"
                , "--alpha", "150"
                , "--transparent", "true"
-               , "--tint", "0x0000ff"
+               , "--tint", "0x000000"
                , "--SetDockType", "true"
                , "--expand", "true"
              --, "--SetPartialStrut", "true"                                   
