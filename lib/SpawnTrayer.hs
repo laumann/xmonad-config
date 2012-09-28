@@ -1,9 +1,16 @@
-module SpawnTrayer (spawnTrayer) where
+module SpawnTrayer
+       ( spawnTrayer
+       , spawnSoundApp
+       ) where
 
 import XMonad
 import XMonad.Util.Run (spawnPipe, safeSpawn)
 
-trayer = "trayer" :: FilePath
+trayer = "trayer"               :: FilePath
+soundApp = "gnome-sound-applet" :: FilePath
+
+spawnSoundApp :: MonadIO m => m ()
+spawnSoundApp = safeSpawn soundApp []
 
 spawnTrayer :: MonadIO m => m ()
 spawnTrayer = safeSpawn trayer args
@@ -15,7 +22,7 @@ spawnTrayer = safeSpawn trayer args
                , "--height", "15"
                , "--alpha", "150"
                , "--transparent", "true"
-               , "--tint", "0x000000"
+               , "--tint", "0xffffff"
                , "--SetDockType", "true"
                , "--expand", "true"
              --, "--SetPartialStrut", "true"                                   

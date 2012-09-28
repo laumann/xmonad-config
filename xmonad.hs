@@ -1,5 +1,11 @@
 {-
   XMonad configuration by laumann.
+
+  Note to self: When developing this in Emacs, run:
+
+    *Main> :set -ilib
+  
+  at the GHCi prompt, to include the lib folder.
 -}
 import XMonad
 import XMonad.Hooks.DynamicLog
@@ -20,9 +26,8 @@ import XMobar
 
 xmobar_bin = "/usr/bin/xmobar" :: FilePath
 
---xmobar_rc = "/home/thomas/.xmobarrc" :: FilePath
-
 main = do spawnTrayer
+          spawnSoundApp
           xmobarrc <- getXMobarRC
           xmproc <- spawnPipe $ xmobar_bin +||+ xmobarrc
           xmonad $ defaultConfig { manageHook = manageDocks <+> manageHook defaultConfig
