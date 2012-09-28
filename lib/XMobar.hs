@@ -19,7 +19,7 @@ module XMobar
        ( getXMobarRC
        ) where
 
-import System.Directory --(getHomeDirectory)
+import System.Directory
 import System.FilePath.Posix
 import Data.List (intercalate)
 
@@ -36,8 +36,8 @@ instance Show Config where
     where fmt options = intercalate "\n       , " $ map show options
 
 instance Show Option where
-  show (Opt key value) = concat [key, " = ", show value]
-  show (OptEnum key value) = concat [key, " = ", value]
+  show (Opt key value)      = concat [key, " = ", show value]
+  show (OptEnum key value)  = concat [key, " = ", value]
   show (OptList key values) = concat [key, " = ", fmt ((length key) + 12) values ]
     where fmt indent values = concat ["[ ", intercalate sep $ values, end]
             where space = replicate indent ' '
@@ -46,9 +46,9 @@ instance Show Option where
 
 defaultXMobarRC :: Config
 defaultXMobarRC = Config $
-                  [ Opt "font" "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
-                  , Opt "bgColor" "black"
-                  , Opt "fgColor" "grey"
+                  [ Opt     "font"     "-*-Fixed-Bold-R-Normal-*-12-*-*-*-*-*-*-*"
+                  , Opt     "bgColor"  "black"
+                  , Opt     "fgColor"  "grey"
                   , OptEnum "position" "Top L 90"
                   , OptEnum "lowerOnStart" $ show True
                   , OptList "commands" [ "Run Swap [] 10"
@@ -58,14 +58,21 @@ defaultXMobarRC = Config $
                                        , "Run Wireless \"wlan0\" [] 10"
                                        , "Run StdinReader"
                                        ]
-                  , Opt "sepChar" "%"
-                  , Opt "alignSep" "}{"
-                  , Opt "template" "%StdinReader% }{ %wlan0wi% | %cpu% | %memory% * %swap% <fc=#ee9a00>%date%</fc> | %battery%"
+                  , Opt     "sepChar"  "%"
+                  , Opt     "alignSep" "}{"
+                  , Opt     "template" "%StdinReader% }{ %wlan0wi% | %cpu% | %memory% * %swap% <fc=#ee9a00>%date%</fc> | %battery%"
                   ]
 
 -- | Return a string representation of an xmobar configuration that can be written to a file.
 printConfig conf = putStr $ show conf
 
+defaultXMobarRCDir :: IO FilePath
+defaultXMobarRCDir = do h <- getHomeDirectory
+                        return $ h </> xmobarrc
+
 getXMobarRC :: IO FilePath
-getXMobarRC = do h <- getHomeDirectory
-                 return $ h </> xmobarrc
+getXMobarRC = do f <- defaultXMobarRCDir
+                 exists <- doesFileExist f
+                 if exists then return f
+                           else do writeFile f $ show defaultXMobarRC
+                                   return f
