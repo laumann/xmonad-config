@@ -6,6 +6,11 @@
     *Main> :set -ilib
   
   at the GHCi prompt, to include the lib folder.
+
+  TODO:
+    * named workspaces
+    * Xinerama (let fullscreen from videos, skype, etc actually be fullscreen...)
+    * kill applets before running them 
 -}
 import XMonad
 import XMonad.Hooks.DynamicLog
@@ -21,16 +26,19 @@ import Data.List (intercalate)
 
 -- Home rolled modules
 import SpawnTrayer
-import SysUtils
+-- import SysUtils
 import XMobar
 
 xmobar_bin = "/usr/bin/xmobar" :: FilePath
 
+myWorkspaces = ["eclipse", "chrome", "firefox"] ++ (map show [4..9])
+
 main = do spawnTrayer
-          spawnSoundApp
+          spawnTrayerApps
           xmobarrc <- getXMobarRC
           xmproc <- spawnPipe $ xmobar_bin +||+ xmobarrc
           xmonad $ defaultConfig { manageHook = manageDocks <+> manageHook defaultConfig
+                                 --, workspaces = myWorkspaces
                                  , layoutHook = avoidStruts $ layoutHook defaultConfig
                                  , logHook    = dynamicLogWithPP xmobarPP
                                                 { ppOutput = hPutStrLn xmproc
