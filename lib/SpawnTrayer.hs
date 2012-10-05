@@ -9,6 +9,7 @@ import XMonad.Util.Run (spawnPipe, safeSpawn, safeSpawnProg)
 trayer   = "trayer"             :: FilePath
 soundApp = "gnome-sound-applet" :: FilePath
 nmapplet = "nm-applet"          :: FilePath
+redshift = "gtk-redshift"       :: FilePath
 
 spawnManyProg :: MonadIO m => [FilePath] -> m ()
 spawnManyProg = mapM_ safeSpawnProg
@@ -16,6 +17,7 @@ spawnManyProg = mapM_ safeSpawnProg
 spawnTrayerApps :: MonadIO m => m ()
 spawnTrayerApps = spawnManyProg [ soundApp
                                 , nmapplet
+                                , redshift
                                 ]
 
 
