@@ -17,14 +17,61 @@
 -------------------------------------------------------------------------------
 module XMobar
        ( getXMobarRC
+       , getDefaultXMobarRC
        ) where
+
+import Control.Monad (when)
 
 import System.Directory
 import System.FilePath.Posix
+import System.Posix.Files (modificationTime, getFileStatus)
+import System.Posix.Types (EpochTime)
+
 import Data.List (intercalate)
 
--- | Constants
-xmobarrc = ".xmobarrc" :: String
+-- | Locations of files on the syste
+xmobarRC :: IO FilePath -- Something like "/home/laumann/.xmobarrc
+xmobarRC = do home <- getHomeDirectory
+              return $ home </> ".xmobarrc"
+
+xmobarhs :: IO FilePath -- Something like "/home/laumann/.xmonad/lib/XMobar.hs"
+xmobarhs = do home <- getHomeDirectory
+              return $ foldl (</>) home [".xmonad", "lib", "XMobar.hs"]
+
+-- | File manipulation and inspection (specifically whether one file 
+-- is newer than another)
+
+-- Is true if f1 is newer than f2
+isFileNewer :: FilePath -> FilePath -> IO Bool
+isFileNewer f1 f2 = do mod1 <- getModTime f1
+                       mod2 <- getModTime f2
+                       return $ mod1 > mod2
+
+getModTime :: FilePath -> IO EpochTime
+getModTime f = do s <- getFileStatus f
+                  return $ modificationTime s
+
+
+-- | Return a string representation of an xmobar configuration that can be written to a file.
+printConfig conf = putStr $ show conf
+
+writeConfig :: FilePath -> Config -> IO ()
+writeConfig f conf = writeFile f $ show conf
+
+getXMobarRC :: Config -> IO FilePath
+getXMobarRC conf = do f <- xmobarRC
+                      exists <- doesFileExist f
+                      if exists then do xmobarHS <- xmobarhs
+                                        new <- isFileNewer xmobarHS f
+                                        when new $ writeConfig f conf
+                                else do writeConfig f conf
+                      return f
+
+
+-- | XMobar configuration definition in Haskell.
+-- This section deals with the representation of XMobar 
+-- configurations, there's a plethora of ways to represent these I 
+-- guess. The defaultXMobarRC provided is my configuration.
 
 data Config = Config [Option]
 data Option = Opt String String
@@ -63,16 +110,4 @@ defaultXMobarRC = Config $
                   , Opt     "template" "%StdinReader% }{ %wlan0wi% | %cpu% | %memory% * %swap% <fc=#ee9a00>%date%</fc> | %battery%"
                   ]
 
--- | Return a string representation of an xmobar configuration that can be written to a file.
-printConfig conf = putStr $ show conf
-
-defaultXMobarRCDir :: IO FilePath
-defaultXMobarRCDir = do h <- getHomeDirectory
-                        return $ h </> xmobarrc
-
-getXMobarRC :: IO FilePath
-getXMobarRC = do f <- defaultXMobarRCDir
-                 exists <- doesFileExist f
-                 if exists then return f
-                           else do writeFile f $ show defaultXMobarRC
-                                   return f
+getDefaultXMobarRC = getXMobarRC defaultXMobarRC
